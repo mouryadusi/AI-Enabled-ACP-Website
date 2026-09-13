@@ -46,8 +46,8 @@ export default {
           "ink-muted": "#5B5E64",
         },
         radar: {
-          DEFAULT: "#4FD8E0",
-          dim: "#2A6E74",
+          DEFAULT: "#2FC2F0",
+          dim: "#1B6B85",
         },
         signal: {
           safe: "#3FDE8F",

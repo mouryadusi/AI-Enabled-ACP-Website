@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vite/
+.env
+.env.*
+backend/.env
+backend/.venv/
+backend/__pycache__/
+__pycache__/
+*.pyc
+.DS_Store
+.localized

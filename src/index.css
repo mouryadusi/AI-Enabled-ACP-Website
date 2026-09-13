@@ -1,0 +1,329 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * Two hand-tuned palettes, not an inversion of each other.
+   *
+   * Dark: a near-black, slightly warm charcoal (never pure #000) — the
+   * "documentary / product" register.
+   * Light: a warm, soft ivory-white (never stark #FFF) with deep ink text
+   * and a deepened accent for contrast — the "gallery" register.
+   */
+  :root {
+    --c-void: 8 9 11;
+    --c-panel: 14 16 20;
+    --c-panel-raised: 20 22 27;
+    --c-line: 30 33 39;
+    --c-ink: 237 238 240;
+    --c-ink-muted: 148 152 161;
+    --c-ink-faint: 90 95 104;
+    --c-accent: 74 214 199;
+    --c-accent-dim: 44 150 140;
+    --c-shadow: 0 0 0;
+    color-scheme: dark;
+  }
+
+  /* A generic (not :root-scoped) rule, so `.dark` can also be applied to a
+     nested subtree to pin it dark regardless of the page-level theme — used
+     to keep the interactive "instrument" sections (globe, simulator, model
+     comparison) permanently dark, like real cockpit displays, in both site
+     themes. */
+  .dark {
+    --c-void: 8 9 11;
+    --c-panel: 14 16 20;
+    --c-panel-raised: 20 22 27;
+    --c-line: 30 33 39;
+    --c-ink: 237 238 240;
+    --c-ink-muted: 148 152 161;
+    --c-ink-faint: 90 95 104;
+    --c-accent: 74 214 199;
+    --c-accent-dim: 44 150 140;
+    --c-shadow: 0 0 0;
+    color-scheme: dark;
+  }
+
+  :root.light {
+    --c-void: 250 248 244;
+    --c-panel: 255 255 255;
+    --c-panel-raised: 246 243 236;
+    --c-line: 226 221 210;
+    --c-ink: 27 27 29;
+    --c-ink-muted: 91 94 100;
+    --c-ink-faint: 143 147 155;
+    --c-accent: 12 122 112;
+    --c-accent-dim: 8 92 84;
+    --c-shadow: 60 52 38;
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+  html,
+  body {
+    transition: background-color 0.4s ease;
+  }
+  ::selection {
+    background: rgb(var(--c-accent) / 0.28);
+    color: rgb(var(--c-ink));
+  }
+  body {
+    background-color: rgb(var(--c-void));
+    color: rgb(var(--c-ink));
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--c-void)); }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--c-line));
+    border-radius: 999px;
+    border: 2px solid rgb(var(--c-void));
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+  }
+
+  /* Custom cursor: hide the system cursor on precision-pointer devices only,
+     so touch/trackpad-only or reduced-motion users keep a normal cursor. */
+  @media (hover: hover) and (pointer: fine) {
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+      cursor: none !important;
+    }
+  }
+
+  /* Accessibility/personalization effects — each toggled independently by
+     AccessibilityContext, combined from whichever options are active. */
+  html.a11y-large-text { font-size: 112%; }
+  html.a11y-high-contrast {
+    filter: contrast(1.18) saturate(1.05);
+  }
+  html.a11y-high-contrast body { text-shadow: none; }
+  html.a11y-dyslexia-friendly * {
+    letter-spacing: 0.04em !important;
+    line-height: 1.8 !important;
+    word-spacing: 0.08em !important;
+  }
+  html.a11y-warm-filter { filter: sepia(0.16) saturate(0.92) hue-rotate(-6deg); }
+  html.a11y-grayscale { filter: grayscale(1); }
+  html.a11y-high-contrast.a11y-grayscale { filter: grayscale(1) contrast(1.25); }
+  html.a11y-reduced-glow .shadow-glow,
+  html.a11y-reduced-glow [class*="animate-"] {
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  html.a11y-reduced-motion *,
+  html.a11y-reduced-motion *::before,
+  html.a11y-reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html.a11y-large-targets a,
+  html.a11y-large-targets button {
+    min-height: 44px;
+    min-width: 44px;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
+  }
+  html.a11y-native-cursor,
+  html.a11y-native-cursor * {
+    cursor: auto !important;
+  }
+  html.a11y-calm-mode .pointer-events-none.fixed.inset-0 {
+    display: none;
+  }
+  /* Colour-safe palette: the Okabe–Ito colourblind-safe triad (blue / orange
+     / black), swapped in for the red/amber/green status colours used across
+     the globe, simulator and monitor — the actually-recommended real fix
+     (distinguishable regardless of colour-vision type) rather than an
+     attempted per-type correction filter. */
+  html.a11y-color-safe-palette .bg-signal-safe { background-color: #0072B2 !important; }
+  html.a11y-color-safe-palette .bg-signal-caution { background-color: #E69F00 !important; }
+  html.a11y-color-safe-palette .bg-signal-conflict { background-color: #000000 !important; }
+  html.a11y-color-safe-palette .text-signal-safe { color: #0072B2 !important; }
+  html.a11y-color-safe-palette .text-signal-caution { color: #E69F00 !important; }
+  html.a11y-color-safe-palette .text-signal-conflict { color: #000000 !important; }
+}
+
+@layer components {
+  /* The editorial measure: a proper reading-width column rather than an
+     arbitrary pixel max-width. 62ch sits inside the 45–75 character range
+     that typography research treats as the readable line-length band —
+     wide enough not to feel choppy, narrow enough that the eye doesn't
+     lose its place returning to the next line. `text-wrap: pretty` (where
+     supported) additionally asks the browser to avoid single-word orphan
+     lines; `overflow-wrap`/`word-break` are explicit so no paragraph can
+     ever overflow its container or fuse two words together regardless of
+     viewport width. This is the one place all dissertation body copy
+     should route through, rather than ad-hoc max-widths per component. */
+  .editorial-measure {
+    max-width: 62ch;
+    line-height: 1.7;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: none;
+    text-wrap: pretty;
+  }
+  .glass {
+    @apply bg-panel/70 backdrop-blur-xl border border-line/70 shadow-glass;
+  }
+  .eyebrow {
+    @apply font-mono text-[11px] tracking-[0.28em] uppercase text-accent/80;
+  }
+  .paper-page {
+    @apply relative flex h-full w-full flex-col justify-center overflow-y-auto px-6 shadow-paper sm:px-12 lg:px-20;
+  }
+  /* A thin darker strip along the bottom edge of the active page — the
+     visual cue of paper thickness, so the top sheet reads as an object
+     with depth rather than a flat rectangle sitting on the stack. */
+  .paper-page::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 6px;
+    background: linear-gradient(to bottom, transparent, rgb(var(--c-shadow) / 0.14));
+    pointer-events: none;
+  }
+  /* Sticky-note card: a slight rotation and a folded-corner pin, so it reads
+     as something placed by hand rather than a generic UI card. */
+  .sticky-note {
+    @apply relative bg-paper-ivory text-paper-ink shadow-note;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+  }
+  .sticky-note::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    background: rgb(var(--c-shadow) / 0.14);
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+  /* Boarding-pass perforation: a dashed tear line with a small notch cut
+     from each edge, like the stub-separator on a real ticket. */
+  .boarding-tear {
+    position: relative;
+    border-top: 1.5px dashed rgb(var(--c-shadow) / 0.28);
+  }
+  .boarding-tear::before,
+  .boarding-tear::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: rgb(var(--c-void));
+  }
+  .boarding-tear::before { left: -7px; }
+  .boarding-tear::after { right: -7px; }
+  /* Editorial drop cap for the first paragraph of a chapter — a small,
+     deliberately imperfect touch that a template generator wouldn't add. */
+  .drop-cap::first-letter {
+    font-family: 'Fraunces', serif;
+    font-size: 3.4em;
+    line-height: 0.85;
+    font-weight: 500;
+    float: left;
+    margin-right: 0.08em;
+    margin-top: 0.03em;
+    color: rgb(var(--c-accent-dim));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Accessibility / personalization effects. Each class is applied to
+   <html> by AccessibilityContext based on which named options are
+   active — every option maps to a real rule here, nothing is
+   label-only. Kept outside @layer so these rules always win regardless
+   of Tailwind's layer ordering. */
+
+html.a11y-largeText {
+  font-size: 112.5%; /* scales every rem-based size site-wide */
+}
+html.a11y-largeText .editorial-measure {
+  max-width: 68ch;
+}
+
+html.a11y-highContrast body {
+  filter: contrast(1.18) saturate(1.05);
+}
+html.a11y-highContrast .text-ink-muted,
+html.a11y-highContrast .text-paper-ink-muted {
+  color: rgb(var(--c-ink)) !important;
+}
+
+html.a11y-dyslexiaFriendly body {
+  letter-spacing: 0.02em;
+  word-spacing: 0.12em;
+}
+html.a11y-dyslexiaFriendly p,
+html.a11y-dyslexiaFriendly li {
+  line-height: 1.9 !important;
+}
+
+html.a11y-colorSafePalette {
+  --c-accent: 74 144 226; /* colour-safe blue, distinguishable across common CVD types */
+  --c-accent-dim: 52 108 178;
+}
+html.a11y-colorSafePalette .bg-signal-safe { background-color: #2E7D32 !important; }
+html.a11y-colorSafePalette .bg-signal-caution { background-color: #F9A825 !important; }
+html.a11y-colorSafePalette .bg-signal-conflict { background-color: #1A1A1A !important; }
+html.a11y-colorSafePalette .text-signal-safe { color: #2E7D32 !important; }
+html.a11y-colorSafePalette .text-signal-caution { color: #F9A825 !important; }
+html.a11y-colorSafePalette .text-signal-conflict { color: #1A1A1A !important; }
+
+html.a11y-warmFilter body {
+  filter: sepia(0.14) saturate(0.92) brightness(0.97);
+}
+
+html.a11y-grayscale body {
+  filter: grayscale(1);
+}
+
+html.a11y-reducedMotion *,
+html.a11y-reducedMotion *::before,
+html.a11y-reducedMotion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.a11y-reducedGlow .shadow-glow,
+html.a11y-reducedGlow [style*="box-shadow"] {
+  box-shadow: none !important;
+}
+html.a11y-reducedGlow .animate-pulse,
+html.a11y-reducedGlow .animate-ping {
+  animation: none !important;
+}
+
+html.a11y-largeTargets button,
+html.a11y-largeTargets a {
+  min-height: 44px;
+  min-width: 44px;
+  padding-top: max(0.6rem, env(safe-area-inset-top, 0));
+}
+
+html.a11y-nativeCursor,
+html.a11y-nativeCursor * {
+  cursor: auto !important;
+}
+
+html.a11y-calmMode .pointer-events-none.fixed.inset-0 {
+  opacity: 0 !important;
+}
