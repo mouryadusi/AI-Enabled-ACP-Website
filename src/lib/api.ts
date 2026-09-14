@@ -12,23 +12,16 @@ model: "xgboost" | "gcn" | "gat";
 factors: { label: string; value: number }[];
 }
 
-/**
-
-Convert an unknown API value into a valid probability in the
-0..1 range.
-Supports both:
-0.87
-and:
-87
-*/
 function normalizeProbability(value: unknown): number | null {
 if (value === null || value === undefined) {
 return null;
 }
+
 const numberValue =
 typeof value === "number"
 ? value
 : Number(value);
+
 if (!Number.isFinite(numberValue)) {
 return null;
 }
@@ -79,11 +72,15 @@ return [];
 
 return value
 .map((factor) => {
-if (!factor || typeof factor !== "object") {
+if (
+!factor ||
+typeof factor !== "object"
+) {
 return null;
 }
 
-  const item = factor as Record<string, unknown>;
+  const item =
+    factor as Record<string, unknown>;
 
   const label =
     typeof item.label === "string"
@@ -112,22 +109,16 @@ return null;
     value: number;
   } => factor !== null,
 );
-
 }
-/**
-
-Requests a conflict prediction from the FastAPI backend.
-If the backend is unreachable OR returns malformed prediction
-data, the bundled mock prediction is used instead.
-*/
 export async function fetchConflictPrediction(
 flightId: string,
 model: ConflictPrediction["model"] = "xgboost",
 ): Promise<ConflictPrediction> {
 const flight = getFlight(flightId);
+
 try {
 const res = await fetch(
-${API_BASE_URL}/predict,
+`${API_BASE_URL}/predict`,
 {
 method: "POST",
 headers: {
@@ -160,6 +151,7 @@ flight.nearbyTraffic - 1,
 ),
 ],
 ],
+
       edge_index: [
         [0, 1],
         [1, 0],
@@ -184,7 +176,6 @@ flight.nearbyTraffic - 1,
         ],
       ],
     }),
-
     signal: AbortSignal.timeout(2500),
   },
 );
@@ -209,10 +200,6 @@ if (
 const response =
   data as Record<string, unknown>;
 
-/*
- * Accept the expected field first, while also supporting
- * common alternate names returned by ML APIs.
- */
 const rawProbability =
   response.probability ??
   response.conflict_probability ??
@@ -224,25 +211,14 @@ const probability =
   normalizeProbability(rawProbability);
 
 if (probability === null) {
-  console.warn(
-    "Backend returned invalid probability. Falling back to mock prediction.",
-    response,
-  );
-
   throw new Error(
     "Backend returned an invalid probability",
   );
 }
-
-const status =
+  const status =
   normalizeStatus(response.status);
 
 if (!status) {
-  console.warn(
-    "Backend returned invalid status. Falling back to mock prediction.",
-    response,
-  );
-
   throw new Error(
     "Backend returned an invalid status",
   );
@@ -267,10 +243,6 @@ return {
 };
 
 } catch (error) {
-/*
-* The fallback is intentional. A malformed or unavailable
-* backend must never crash the React application.
-*/
 console.warn(
 "Conflict prediction backend unavailable. Using mock prediction.",
 error,
@@ -303,7 +275,9 @@ flightId: flight.id,
 status: flight.status,
 probability,
 model,
-factors: Array.isArray(flight.factors)
+factors: Array.isArray(
+flight.factors,
+)
 ? flight.factors
 : [],
 };
@@ -318,3 +292,4 @@ mockFlights.find(
 ) ?? mockFlights[0]
 );
 }
+  
