@@ -1,7 +1,7 @@
 import type { MockFlight } from "@/data/mission";
 import { mockFlights } from "@/data/mission";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://aircraft-conflict-gnn.onrender.com";
 
 export interface ConflictPrediction {
   flightId: string;
@@ -22,11 +22,53 @@ export async function fetchConflictPrediction(
   flightId: string,
   model: ConflictPrediction["model"] = "xgboost",
 ): Promise<ConflictPrediction> {
+  const flight = getFlight(flightId);
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/predict`, {
+    const res = await fetch(`${API_BASE_URL}/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ flight_id: flightId, model }),
+      body: JSON.stringify({
+        x: [
+          [
+            flight.originLat,
+            flight.originLng,
+            flight.altitudeFt,
+            flight.speedKts,
+            flight.headingDeg,
+            flight.nearbyTraffic,
+          ],
+          [
+            flight.destLat,
+            flight.destLng,
+            flight.altitudeFt - flight.verticalSeparationFt,
+            Math.max(0, flight.speedKts - flight.closingRateKts),
+            (flight.headingDeg + 180) % 360,
+            Math.max(0, flight.nearbyTraffic - 1),
+          ],
+        ],
+        edge_index: [
+          [0, 1],
+          [1, 0],
+        ],
+        edge_attr: [
+          [
+            flight.separationNm,
+            flight.verticalSeparationFt,
+            flight.closingRateKts,
+            flight.tcpaSeconds,
+            flight.dcpaNm,
+            flight.nearbyTraffic,
+          ],
+          [
+            flight.separationNm,
+            flight.verticalSeparationFt,
+            flight.closingRateKts,
+            flight.tcpaSeconds,
+            flight.dcpaNm,
+            flight.nearbyTraffic,
+          ],
+        ],
+      }),
       signal: AbortSignal.timeout(2500),
     });
     if (!res.ok) throw new Error(`Backend responded ${res.status}`);
