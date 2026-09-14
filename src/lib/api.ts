@@ -112,6 +112,7 @@ return null;
     value: number;
   } => factor !== null,
 );
+
 }
 /**
 
@@ -264,6 +265,7 @@ return {
     response.factors,
   ),
 };
+
 } catch (error) {
 /*
 * The fallback is intentional. A malformed or unavailable
@@ -277,6 +279,7 @@ return mockPredict(
   flightId,
   model,
 );
+
 }
 }
 function mockPredict(
