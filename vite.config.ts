@@ -15,6 +15,11 @@ export default defineConfig({
     },
   },
   server: { port: 5173 },
+
+  preview: {
+    allowedHosts: ["aircraft-conflict-frontend.onrender.com"],
+  },
+
   build: {
     target: "es2020",
     sourcemap: true,
